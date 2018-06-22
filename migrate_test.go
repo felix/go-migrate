@@ -32,6 +32,7 @@ var testMigrations = []struct {
 	// Out of order please
 	{version: 2, sql: "insert into test1 (pk) values (1)"},
 	{version: 3, sql: "insert into test1 (pk) values (2)"},
+	{version: 4, sql: "insert into nonexistant (pk) values (2)"},
 	{version: 1, sql: "create table if not exists test1 (pk bigint not null primary key)"},
 }
 
@@ -62,7 +63,7 @@ func TestMigrate(t *testing.T) {
 		t.Fatalf("Migrator.Version() should be NilVersion, got %d", v)
 	}
 
-	err = migrator.Migrate()
+	err = migrator.MigrateTo(3)
 	if err != nil {
 		t.Fatalf("Migrator.Migrate() failed: %v", err)
 	}
@@ -72,8 +73,22 @@ func TestMigrate(t *testing.T) {
 		t.Fatalf("Migrator.Version() failed: %v", err)
 	}
 
-	if int(v) != len(migrations) {
-		t.Errorf("expected migration version %d, got %d", len(migrations), v)
+	if int(v) != len(migrations)-1 {
+		t.Errorf("expected migration version %d, got %d", len(migrations)-1, v)
+	}
+
+	err = migrator.MigrateTo(4)
+	if err == nil {
+		t.Fatalf("Migrator.Migrate(4) should have failed")
+	}
+
+	v, err = migrator.Version()
+	if err != nil {
+		t.Fatalf("Migrator.Version() failed: %v", err)
+	}
+
+	if int(v) != len(migrations)-1 {
+		t.Errorf("expected migration version %d, got %d", len(migrations)-1, v)
 	}
 
 	var result int64

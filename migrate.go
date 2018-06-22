@@ -82,7 +82,7 @@ func (m *Migrator) MigrateTo(toVersion int64) error {
 
 	currVersion, err := m.Version()
 	if err != nil {
-		return fmt.Errorf("migration %d failed: %s", currVersion, err)
+		return err
 	}
 
 	if currVersion >= toVersion {
@@ -108,25 +108,25 @@ func (m *Migrator) MigrateTo(toVersion int64) error {
 				// Start a transaction
 				tx, err := m.db.Begin()
 				if err != nil {
-					return fmt.Errorf("migration %d failed: %s", currVersion, err)
+					return fmt.Errorf("migration %d failed: %s", nextVersion, err)
 				}
 				defer tx.Commit()
 
 				// Run the migration
 				if err = mig.Run(tx); err != nil {
 					tx.Rollback()
-					return fmt.Errorf("migration %d failed: %s", currVersion, err)
+					return fmt.Errorf("migration %d failed: %s", nextVersion, err)
 				}
 				// Update the version entry
 				if err = m.setVersion(tx, nextVersion); err != nil {
 					tx.Rollback()
-					return fmt.Errorf("migration %d failed: %s", currVersion, err)
+					return fmt.Errorf("migration %d failed: %s", nextVersion, err)
 				}
 				return tx.Commit()
 			}()
 
 			if m.callback != nil {
-				go m.callback(maxVersion, currVersion, err)
+				go m.callback(maxVersion, nextVersion, err)
 			}
 
 			if err != nil {
