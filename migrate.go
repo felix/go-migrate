@@ -104,6 +104,7 @@ func (m *Migrator) MigrateTo(toVersion int64) error {
 		}
 
 		if currVersion < nextVersion && nextVersion <= toVersion {
+			// Scope for defer
 			err = func() error {
 				// Start a transaction
 				tx, err := m.db.Begin()
@@ -152,7 +153,7 @@ func (m *Migrator) prepareForMigration() error {
 	}
 
 	if m.versionTable == nil {
-		vt := "current_schema_version"
+		vt := "schema_version"
 		m.versionTable = &vt
 	}
 
