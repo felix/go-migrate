@@ -13,6 +13,14 @@ func SetVersionTable(vt string) Option {
 	}
 }
 
+// SetCallback configures the table used for recording the schema version
+func SetCallback(cb ResultFunc) Option {
+	return func(m *Migrator) error {
+		m.callback = cb
+		return nil
+	}
+}
+
 // SetContext configures the context for queries
 /*
 func SetContext(ctx context.Context) Option {

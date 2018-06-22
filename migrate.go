@@ -13,15 +13,6 @@ const (
 	NilVersion = -1
 )
 
-// A Migrator collates and runs migrations
-type Migrator struct {
-	db           *sql.DB
-	migrations   []Migration
-	versionTable *string
-	stmts        map[string]*sql.Stmt
-	prepared     bool
-}
-
 // Migration interface
 type Migration interface {
 	// The version of this migration
@@ -32,6 +23,16 @@ type Migration interface {
 
 // ResultFunc is the callback signature
 type ResultFunc func(int64, int64, error)
+
+// A Migrator collates and runs migrations
+type Migrator struct {
+	db           *sql.DB
+	migrations   []Migration
+	versionTable *string
+	stmts        map[string]*sql.Stmt
+	prepared     bool
+	callback     ResultFunc
+}
 
 // Sort those migrations
 type sorted []Migration
@@ -47,22 +48,19 @@ func (m *Migrator) Version() (int64, error) {
 		return NilVersion, err
 	}
 
-	rows, err := m.stmts["getVersion"].Query()
-	if rows.Next() {
-		var version int64
-		err = rows.Scan(&version)
+	var version int64
+	err = m.stmts["getVersion"].QueryRow().Scan(&version)
+	if err != nil {
 		if err == sql.ErrNoRows {
 			return NilVersion, nil
 		}
-		if err == nil {
-			return version, nil
-		}
+		return NilVersion, err
 	}
-	return 0, err
+	return version, nil
 }
 
 // Migrate migrates the database to the highest possible version
-func (m *Migrator) Migrate(cb ResultFunc) error {
+func (m *Migrator) Migrate() error {
 	err := m.prepareForMigration()
 	if err != nil {
 		return err
@@ -70,11 +68,11 @@ func (m *Migrator) Migrate(cb ResultFunc) error {
 
 	// Get the last available migration
 	v := m.migrations[len(m.migrations)-1].Version()
-	return m.MigrateTo(v, cb)
+	return m.MigrateTo(v)
 }
 
 // MigrateTo migrates the database to the specified version
-func (m *Migrator) MigrateTo(toVersion int64, cb ResultFunc) error {
+func (m *Migrator) MigrateTo(toVersion int64) error {
 	err := m.prepareForMigration()
 	if err != nil {
 		return err
@@ -84,13 +82,11 @@ func (m *Migrator) MigrateTo(toVersion int64, cb ResultFunc) error {
 
 	currVersion, err := m.Version()
 	if err != nil {
-		return err
+		return fmt.Errorf("migration %d failed: %s", currVersion, err)
 	}
 
 	if currVersion >= toVersion {
-		if cb != nil {
-			go cb(maxVersion, currVersion, nil)
-		}
+		go m.callback(maxVersion, currVersion, nil)
 		return nil
 	}
 
@@ -109,44 +105,32 @@ func (m *Migrator) MigrateTo(toVersion int64, cb ResultFunc) error {
 
 		if currVersion < nextVersion && nextVersion <= toVersion {
 			err = func() error {
-				fmt.Println("running migration", nextVersion)
 				// Start a transaction
 				tx, err := m.db.Begin()
 				if err != nil {
-					if cb != nil {
-						go cb(maxVersion, currVersion, err)
-					}
-					return err
+					return fmt.Errorf("migration %d failed: %s", currVersion, err)
 				}
-				defer tx.Rollback()
+				defer tx.Commit()
 
 				// Run the migration
 				if err = mig.Run(tx); err != nil {
-					if cb != nil {
-						go cb(maxVersion, currVersion, err)
-					}
-					return err
+					tx.Rollback()
+					return fmt.Errorf("migration %d failed: %s", currVersion, err)
 				}
 				// Update the version entry
-				fmt.Println("updating version")
 				if err = m.setVersion(tx, nextVersion); err != nil {
-					if cb != nil {
-						go cb(maxVersion, currVersion, err)
-					}
-					return err
+					tx.Rollback()
+					return fmt.Errorf("migration %d failed: %s", currVersion, err)
 				}
-				// Commit the transaction
-				fmt.Println("committing version")
 				return tx.Commit()
 			}()
-			if err != nil {
-				if cb != nil {
-					go cb(maxVersion, currVersion, err)
-				}
-				return err
+
+			if m.callback != nil {
+				go m.callback(maxVersion, currVersion, err)
 			}
-			if cb != nil {
-				go cb(maxVersion, currVersion, nil)
+
+			if err != nil {
+				return err
 			}
 		}
 		currVersion = nextVersion
@@ -204,12 +188,11 @@ func (m *Migrator) prepareStmts() error {
 }
 
 const (
-	getVersionSQL    = `select coalesce(max(version), %d) from %q`
-	insertVersionSQL = `insert into %q (version, applied) values ($1, $2)`
+	getVersionSQL    = `select coalesce(max(version), %d) from %s`
+	insertVersionSQL = `insert into %s (version, applied) values ($1, $2)`
 
 	// Use Unix timestamp for time so it works for SQLite and PostgreSQL
-	createTableSQL = `create table if not exists %q (
+	createTableSQL = `create table if not exists %s (
 		version bigint not null primary key,
-		applied int
-	)`
+		applied int)`
 )
