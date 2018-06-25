@@ -86,7 +86,9 @@ func (m *Migrator) MigrateTo(toVersion int64) error {
 	}
 
 	if currVersion >= toVersion {
-		go m.callback(maxVersion, currVersion, nil)
+		if m.callback != nil {
+			go m.callback(maxVersion, currVersion, nil)
+		}
 		return nil
 	}
 
