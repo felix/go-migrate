@@ -120,5 +120,8 @@ func readFiles(uri string) (migrations []Migration, err error) {
 			seen[v] = true
 		}
 	}
+	if len(migrations) == 0 {
+		return nil, fmt.Errorf("no migrations found")
+	}
 	return migrations, nil
 }

@@ -65,7 +65,7 @@ func TestMigrate(t *testing.T) {
 
 	err = migrator.MigrateTo(3)
 	if err != nil {
-		t.Fatalf("Migrator.Migrate() failed: %v", err)
+		t.Fatalf("Migrator.MigrateTo(3) failed: %v", err)
 	}
 
 	v, err = migrator.Version()
@@ -79,7 +79,7 @@ func TestMigrate(t *testing.T) {
 
 	err = migrator.MigrateTo(4)
 	if err == nil {
-		t.Fatalf("Migrator.Migrate(4) should have failed")
+		t.Fatalf("Migrator.MigrateTo(4) should have failed")
 	}
 
 	v, err = migrator.Version()
