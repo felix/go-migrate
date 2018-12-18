@@ -4,7 +4,8 @@ A very simple migration library for your Go projects.
 
     import "github.com/felix/go-migrate"
 or
-    import "userspace.com.au/go-migrate"
+
+    import "src.userspace.com.au/go-migrate"
 
 ## Features
 
