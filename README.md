@@ -1,8 +1,8 @@
+# Go migrations
+
 [![Build Status](https://travis-ci.org/felix/go-migrate.svg)](https://travis-ci.org/felix/go-migrate)
 [![GoDoc](https://godoc.org/github.com/felix/go-migrate?status.svg)](http://godoc.org/github.com/felix/go-migrate)
 [![Go Report Card](https://goreportcard.com/badge/github.com/felix/go-migrate)](https://goreportcard.com/report/github.com/felix/go-migrate)
-
-# Go migrations
 
 A very simple migration library for your Go projects.
 
