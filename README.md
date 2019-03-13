@@ -1,6 +1,6 @@
 # Go migrations
 
-[![Build Status](https://travis-ci.org/felix/go-migrate.svg)](https://travis-ci.org/felix/go-migrate)
+[![Build Status](https://cloud.drone.io/api/badges/felix/go-migrate/status.svg)](https://cloud.drone.io/felix/go-migrate)
 [![GoDoc](https://godoc.org/github.com/felix/go-migrate?status.svg)](http://godoc.org/github.com/felix/go-migrate)
 [![Go Report Card](https://goreportcard.com/badge/github.com/felix/go-migrate)](https://goreportcard.com/report/github.com/felix/go-migrate)
 
