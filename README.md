@@ -1,5 +1,7 @@
 # Go migrations
 
+![build status](https://api.travis-ci.org/felix/go-migrate.svg?branch=master)
+
 A very simple migration library for your Go projects.
 
     import "github.com/felix/go-migrate"
