@@ -4,10 +4,15 @@
 
 A very simple migration library for your Go projects.
 
-    import "github.com/felix/go-migrate"
+```go
+import "github.com/felix/go-migrate"
+```
+
 or
 
-    import "src.userspace.com.au/go-migrate"
+```go
+import "src.userspace.com.au/felix/go-migrate"
+```
 
 ## Features
 
@@ -21,25 +26,27 @@ or
 
 ## Usage
 
-	db, err := sql.Open("pgx", uri)
-	//db, err := sql.Open("sqlite3", uri)
-	if err != nil {
-		return err
-	}
-	defer db.Close()
+```go
+db, err := sql.Open("pgx", uri)
+//db, err := sql.Open("sqlite3", uri)
+if err != nil {
+    return err
+}
+defer db.Close()
 
-    // Relative path to migration files
-	migrator, err := migrate.NewFileMigrator(db, "file://migrations/")
-	if err != nil {
-		return fmt.Errorf("failed to create migrator: %s", err)
-	}
+// Relative path to migration files
+migrator, err := migrate.NewFileMigrator(db, "file://migrations/")
+if err != nil {
+    return fmt.Errorf("failed to create migrator: %s", err)
+}
 
-    // Migrate all the way
-	err = migrator.Migrate()
-	if err != nil {
-		return fmt.Errorf("failed to migrate: %s", err)
-	}
+// Migrate all the way
+err = migrator.Migrate()
+if err != nil {
+    return fmt.Errorf("failed to migrate: %s", err)
+}
 
-	v, err := migrator.Version()
-	fmt.Printf("database at version %d\n", v)
+v, err := migrator.Version()
+fmt.Printf("database at version %d\n", v)
+```
 
