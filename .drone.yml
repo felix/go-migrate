@@ -4,8 +4,5 @@ steps:
     - name: test
       image: "golang:alpine"
       commands:
-          - go get -u github.com/mattn/go-sqlite3
-          - go install github.com/mattn/go-sqlite3
-          - for file in $$(find . -name 'vendor' -prune -o -type f -name '*.go'); do golint $$file; done
           - go test -race -short -coverprofile=coverage.txt -covermode=atomic ./...
           - bash <(curl -s https://codecov.io/bash)
