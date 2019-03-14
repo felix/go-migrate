@@ -6,4 +6,4 @@ steps:
       commands:
           - apk add --no-cache build-base ca-certificates git
           - go get github.com/mattn/goveralls
-          - goveralls -service drone.io || exit 0
+          - goveralls -v -service drone.io || exit 0
