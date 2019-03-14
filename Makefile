@@ -1,21 +1,22 @@
 
+GOPATH?=	$(HOME)/go
+
 .PHONY: test
-test: lint sqlite ## Run tests and create coverage report
+test: lint ## Run tests and create coverage report
 	go test -race -short -coverprofile=coverage.txt -covermode=atomic ./...
 	go tool cover -html=coverage.txt -o coverage.html
 
-sqlite:
-	go get -u $(FLAGS) github.com/mattn/go-sqlite3
-	go install $(FLAGS) github.com/mattn/go-sqlite3
-
 .PHONY: lint
-lint:
+lint: $(GOPATH)/bin/golint ## Run the code linter
 	@for file in $$(find . -name 'vendor' -prune -o -type f -name '*.go'); do \
 		golint $$file; done
 
+$(GOPATH)/bin/golint:
+	go get -u golang.org/x/lint/golint
+
 .PHONY: clean
 clean: ## Clean up temp files and binaries
-	rm -rf coverage*
+	@rm -rf coverage*
 
 .PHONY: help
 help:
