@@ -1,7 +1,8 @@
 # Go migrations
 
-[![Build Status](https://cloud.drone.io/api/badges/felix/go-migrate/status.svg)](https://cloud.drone.io/felix/go-migrate)
 [![GoDoc](https://godoc.org/github.com/felix/go-migrate?status.svg)](http://godoc.org/github.com/felix/go-migrate)
+[![Build Status](https://cloud.drone.io/api/badges/felix/go-migrate/status.svg)](https://cloud.drone.io/felix/go-migrate)
+[![Coverage Status](https://coveralls.io/repos/github/felix/go-migrate/badge.svg?branch=master)](https://coveralls.io/github/felix/go-migrate?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/felix/go-migrate)](https://goreportcard.com/report/github.com/felix/go-migrate)
 
 A very simple migration library for your Go projects.

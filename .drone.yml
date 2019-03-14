@@ -5,5 +5,5 @@ steps:
       image: "golang:alpine"
       commands:
           - apk add --no-cache build-base ca-certificates git
-          - make test
-          - bash <(curl -s https://codecov.io/bash)
+          - go get github.com/mattn/goveralls
+          - goveralls -service drone.io
