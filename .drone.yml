@@ -4,6 +4,6 @@ steps:
     - name: test
       image: "golang:alpine"
       commands:
-          - apk add --no-cache gcc ca-certificates git make
-          - make
+          - apk add --no-cache build-base ca-certificates git
+          - make test
           - bash <(curl -s https://codecov.io/bash)
