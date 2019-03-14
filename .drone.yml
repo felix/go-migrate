@@ -4,5 +4,6 @@ steps:
     - name: test
       image: "golang:alpine"
       commands:
-          - go test -race -short -coverprofile=coverage.txt -covermode=atomic ./...
+          - apk add --no-cache gcc ca-certificates git make
+          - make
           - bash <(curl -s https://codecov.io/bash)
