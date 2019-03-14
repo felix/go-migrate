@@ -7,16 +7,6 @@
 
 A very simple migration library for your Go projects.
 
-```go
-import "github.com/felix/go-migrate"
-```
-
-or
-
-```go
-import "src.userspace.com.au/felix/go-migrate"
-```
-
 ## Features
 
 - Any database/sql drivers should work. See https://github.com/golang/go/wiki/SQLDrivers
@@ -30,6 +20,9 @@ import "src.userspace.com.au/felix/go-migrate"
 ## Usage
 
 ```go
+import "src.userspace.com.au/felix/go-migrate"
+// or import "github.com/felix/go-migrate"
+
 db, err := sql.Open("pgx", uri)
 //db, err := sql.Open("sqlite3", uri)
 if err != nil {
