@@ -3,7 +3,7 @@ GOPATH?=	$(HOME)/go
 
 .PHONY: test
 test: lint ## Run tests and create coverage report
-	go test -race -short -coverprofile=coverage.txt -covermode=atomic ./...
+	go test -short -coverprofile=coverage.txt -covermode=atomic ./...
 	go tool cover -html=coverage.txt -o coverage.html
 
 .PHONY: lint
