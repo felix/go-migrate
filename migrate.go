@@ -43,14 +43,12 @@ func (s sorted) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 // Version reports the current version of the database
 func (m *Migrator) Version() (int64, error) {
-	err := m.prepareForMigration()
-	if err != nil {
+	if err := m.prepareForMigration(); err != nil {
 		return NilVersion, err
 	}
 
 	var version int64
-	err = m.stmts["getVersion"].QueryRow().Scan(&version)
-	if err != nil {
+	if err := m.stmts["getVersion"].QueryRow().Scan(&version); err != nil {
 		if err == sql.ErrNoRows {
 			return NilVersion, nil
 		}
@@ -61,8 +59,7 @@ func (m *Migrator) Version() (int64, error) {
 
 // Migrate migrates the database to the highest possible version
 func (m *Migrator) Migrate() error {
-	err := m.prepareForMigration()
-	if err != nil {
+	if err := m.prepareForMigration(); err != nil {
 		return err
 	}
 
@@ -73,8 +70,7 @@ func (m *Migrator) Migrate() error {
 
 // MigrateTo migrates the database to the specified version
 func (m *Migrator) MigrateTo(toVersion int64) error {
-	err := m.prepareForMigration()
-	if err != nil {
+	if err := m.prepareForMigration(); err != nil {
 		return err
 	}
 
@@ -154,17 +150,21 @@ func (m *Migrator) prepareForMigration() error {
 		return nil
 	}
 
+	if len(m.migrations) < 1 {
+		return fmt.Errorf("migrate: no migrations loaded")
+	}
+
 	if m.versionTable == nil {
 		vt := "schema_version"
 		m.versionTable = &vt
 	}
 
 	if _, err := m.db.Exec(fmt.Sprintf(createTableSQL, *m.versionTable)); err != nil {
-		return err
+		return fmt.Errorf("migrate: failed to create version table: %w", err)
 	}
 
 	if err := m.prepareStmts(); err != nil {
-		return err
+		return fmt.Errorf("migrate: failed to prepare statements: %w", err)
 	}
 
 	sort.Sort(sorted(m.migrations))
