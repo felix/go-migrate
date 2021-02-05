@@ -4,15 +4,19 @@ A very simple migration library for your Go projects.
 
 ## Features
 
-- Any database/sql drivers should work. See https://github.com/golang/go/wiki/SQLDrivers
+- Any database/sql compatible drivers should work. See
+  https://github.com/golang/go/wiki/SQLDrivers
 
 - Each migration is run in a transaction so there should be no 'dirty' state.
 
 - Only migrates "up". I have never used a "down" migration.
 
-- Enables a callback function to suit whatever logging implementation you choose.
+- Enables a callback function to suit whatever logging implementation you
+  choose.
 
-## Usage
+- Supports Go1.16's io/fs interface for embedded migrations.
+
+## Example usage
 
 ```go
 import "src.userspace.com.au/go-migrate"
