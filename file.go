@@ -40,11 +40,11 @@ func NewFileMigrator(db *sql.DB, path string, opts ...Option) (*Migrator, error)
 
 // The Version is extracted from the filename
 // It implements the Migration interface
-func (fm fileMigration) Version() int64 {
+func (fm fileMigration) Version() int {
 	m := validFilename.FindStringSubmatch(path.Base(string(fm)))
 	if len(m) == 4 {
-		if version, err := strconv.ParseInt(m[1], 10, 64); err == nil {
-			return version
+		if version, err := strconv.ParseInt(m[1], 10, 32); err == nil {
+			return int(version)
 		}
 	}
 	return -1
@@ -100,7 +100,7 @@ func readFiles(uri string) (migrations []Migration, err error) {
 		return nil, err
 	}
 
-	seen := make(map[int64]bool)
+	seen := make(map[int]bool)
 
 	for _, fi := range files {
 		if !fi.IsDir() {

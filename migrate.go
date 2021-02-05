@@ -16,13 +16,13 @@ const (
 // Migration interface
 type Migration interface {
 	// The version of this migration
-	Version() int64
+	Version() int
 	// Run the migration
 	Run(*sql.Tx) error
 }
 
 // ResultFunc is the callback signature
-type ResultFunc func(int64, int64, error)
+type ResultFunc func(int, int, error)
 
 // A Migrator collates and runs migrations
 type Migrator struct {
@@ -42,12 +42,12 @@ func (s sorted) Less(i, j int) bool { return s[i].Version() < s[j].Version() }
 func (s sorted) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 
 // Version reports the current version of the database
-func (m *Migrator) Version() (int64, error) {
+func (m *Migrator) Version() (int, error) {
 	if err := m.prepareForMigration(); err != nil {
 		return NilVersion, err
 	}
 
-	var version int64
+	var version int
 	if err := m.stmts["getVersion"].QueryRow().Scan(&version); err != nil {
 		if err == sql.ErrNoRows {
 			return NilVersion, nil
@@ -69,7 +69,7 @@ func (m *Migrator) Migrate() error {
 }
 
 // MigrateTo migrates the database to the specified version
-func (m *Migrator) MigrateTo(toVersion int64) error {
+func (m *Migrator) MigrateTo(toVersion int) error {
 	if err := m.prepareForMigration(); err != nil {
 		return err
 	}
@@ -138,7 +138,7 @@ func (m *Migrator) MigrateTo(toVersion int64) error {
 	return nil
 }
 
-func (m *Migrator) setVersion(tx *sql.Tx, version int64) (err error) {
+func (m *Migrator) setVersion(tx *sql.Tx, version int) (err error) {
 	if version >= 0 {
 		_, err = tx.Stmt(m.stmts["insertVersion"]).Exec(version, time.Now().Unix())
 	}

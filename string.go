@@ -5,13 +5,13 @@ import (
 )
 
 type stringMigration struct {
-	version int64
+	version int
 	sql     string
 }
 
 // The Version is extracted from the filename
 // It implements the Migration interface
-func (sm stringMigration) Version() int64 {
+func (sm stringMigration) Version() int {
 	return sm.version
 }
 
@@ -29,7 +29,7 @@ func NewStringMigrator(db *sql.DB, src []string, opts ...Option) (*Migrator, err
 
 	for i, s := range src {
 		migrations = append(migrations, stringMigration{
-			version: int64(i + 1),
+			version: i + 1,
 			sql:     s,
 		})
 	}
