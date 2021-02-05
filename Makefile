@@ -1,13 +1,9 @@
+GO	?= go1.16beta1
 
-.PHONY: test
 test: lint
-	go test -short -coverprofile=coverage.txt -covermode=atomic ./... \
-		&& go tool cover -html=coverage.txt -o coverage.html
+	$(GO) test -race -short -coverprofile=coverage.txt -covermode=atomic ./... \
+		&& $(GO) tool cover -func=coverage.txt
 
-.PHONY: lint
-lint:
-	go vet ./...
+lint: ; $(GO) vet ./...
 
-.PHONY: clean
-clean:
-	rm -rf coverage*
+clean: ; rm -rf coverage*
