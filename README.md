@@ -19,8 +19,8 @@ A very simple migration library for your Go projects.
 ## Example usage
 
 ```go
-import "src.userspace.com.au/go-migrate"
-// or import "github.com/felix/go-migrate"
+import "src.userspace.com.au/migrate"
+// or import "github.com/felix/migrate"
 
 db, err := sql.Open("pgx", uri)
 //db, err := sql.Open("sqlite3", uri)

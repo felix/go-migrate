@@ -5,7 +5,7 @@ import (
 	"embed"
 	"fmt"
 
-	"src.userspace.com.au/go-migrate"
+	"src.userspace.com.au/migrate"
 )
 
 func ExampleNewFileMigrator() {
