@@ -9,7 +9,7 @@ A very simple migration library for your Go projects.
 
 - Each migration is run in a transaction so there should be no 'dirty' state.
 
-- Only migrates "up". I have never used a "down" migration.
+- Only migrates _up_. Yes, just "roll forward".
 
 - Enables a callback function to suit whatever logging implementation you
   choose.
@@ -44,4 +44,3 @@ if err != nil {
 v, err := migrator.Version()
 fmt.Printf("database at version %d\n", v)
 ```
-
